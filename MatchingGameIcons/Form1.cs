@@ -1,6 +1,7 @@
 ﻿/* Summary:
  * Creates an example matching program to build the following competencies:
  *
+ * 
 •Store objects, such as icons, in a List object.
 •Use a foreach loop in Visual C# or a For Each loop in Visual Basic to iterate through items in a list.
 •Keep track of a form's state by using reference variables.
