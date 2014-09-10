@@ -20,11 +20,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace MatchingGameIcons
 {
+
     public partial class Form1 : Form
     {
+        //Timer to keep track of game time
+        private Timer _timer;
+        private DateTime _startTime = DateTime.MinValue;
+        private bool _timerRunning = false;
+
         //this Label object holds the first clicked label
         Label firstClicked = null;
 
@@ -67,9 +74,27 @@ namespace MatchingGameIcons
 
         public Form1()
         {
+
             InitializeComponent();
 
+            //creates atimer and fires the Tick event every second
+            _timer = new Timer();
+            _timer.Interval = 1000;
+            _timer.Tick += new EventHandler(_timer_Tick);
+
+
             AssignIconToSquares();
+        }
+
+        void _timer_Tick(object sender, EventArgs e)
+        {
+            var timeSinceStartTime = DateTime.Now - _startTime;  
+
+            //puts the display time in a format in the HH:MM:SS style
+            timeSinceStartTime = new TimeSpan(timeSinceStartTime.Hours, timeSinceStartTime.Minutes, timeSinceStartTime.Seconds);
+
+            //sets the label time
+            labelStopwatch.Text = timeSinceStartTime.ToString();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -82,6 +107,8 @@ namespace MatchingGameIcons
         //param: name="e", the 'event' that occured
         private void label_Click(object sender, EventArgs e)
         {
+            //Starts the game timer, if not already started
+            gameTimer();
 
             //ignore any clicks by the user if the timer is already started
             if (timer1.Enabled == true)
@@ -158,17 +185,27 @@ namespace MatchingGameIcons
                     if (iconLabel.ForeColor == iconLabel.BackColor)
                         return;
                 }
-
-                //if the loop found no unmatched icons then the player won!
-                MessageBox.Show("You matched all of the icons!", "Congratulations!");
-                Close();
             }
-
+            //if the loop found no unmatched icons then the player won!
+            _timer.Stop();
+            MessageBox.Show("You matched all of the icons!  Your game time was " + labelStopwatch.Text.ToString(), "Congratulations!");
+            Close();
 
         }
 
 
+        private void gameTimer()
+        {
+            //makes sure the timer has not already started
+            if (!_timerRunning)
+            {
+                //sets the current start time and begins the timer
+                _startTime = DateTime.Now;
+                _timer.Start();
+                _timerRunning = true;
 
+            }
+        }
 
     }
 }
